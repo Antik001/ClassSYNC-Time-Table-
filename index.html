@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Timetable & Attendance System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- QR Code Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Navigation -->
+        <nav class="navbar">
+            <div class="logo">
+                <span>Class</span><span class="accent">SYNC</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="#contact" class="nav-link">Contact</a>
+            </div>
+            <div class="auth-buttons">
+                <button class="btn btn-login" onclick="showLoginModal()">Login</button>
+                <button class="btn btn-qr" onclick="showQRLoginModal()"><i class="fas fa-qrcode"></i> QR Login</button>
+                <button class="btn btn-primary" onclick="showRegisterModal()">Get Started</button>
+            </div>
+            <div class="nav-icons">
+                <div class="qr-toggle" onclick="showQRAttendanceModal()">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <div class="theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </div>
+            </div>
+            <div class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">AI-Powered <span class="gradient-text">Timetable</span> & <span class="gradient-text">Attendance</span> System</h1>
+                <p class="hero-subtitle">Streamline academic scheduling and attendance tracking with our intelligent platform</p>
+                <div class="hero-cta">
+                    <button class="btn btn-primary btn-lg" onclick="showRegisterModal()">Get Started</button>
+                    <button class="btn btn-outline btn-lg">Learn More</button>
+                </div>
+            </div>
+            <div class="hero-visual" id="hero-canvas-container">
+                <!-- Three.js canvas will be inserted here -->
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features-section" id="features">
+            <h2 class="section-title">Powerful Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>Smart Timetable Generation</h3>
+                    <p>AI-powered scheduling that optimizes classroom usage and prevents conflicts</p>
+                    <button class="btn btn-outline btn-sm" onclick="showTimetableModal()">
+                        <i class="fas fa-magic"></i> Try It Now
+                    </button>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h3>Automated Attendance</h3>
+                    <p>Quick and accurate attendance tracking with QR codes or facial recognition</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Advanced Analytics</h3>
+                    <p>Comprehensive insights into attendance patterns and classroom utilization</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>Smart Notifications</h3>
+                    <p>Automated alerts for low attendance, schedule changes, and important events</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Role-Based Access Section -->
+        <section class="roles-section">
+            <h2 class="section-title">Tailored For Everyone</h2>
+            <div class="roles-container">
+                <div class="role-card admin-role">
+                    <div class="role-icon">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <h3>Admin Dashboard</h3>
+                    <p>Complete control over timetables, departments, and system-wide analytics</p>
+                    <a href="#" class="role-link" onclick="showDemoModal('admin')">View Demo</a>
+                </div>
+                <div class="role-card faculty-role">
+                    <div class="role-icon">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <h3>Faculty Portal</h3>
+                    <p>Manage classes, track attendance, and communicate with students</p>
+                    <div class="role-actions">
+                        <a href="#" class="role-link" onclick="showDemoModal('faculty')">View Demo</a>
+                        <a href="#" class="role-link qr-link" onclick="showQRAttendanceModal()"><i class="fas fa-qrcode"></i> QR Attendance</a>
+                    </div>
+                </div>
+                <div class="role-card student-role">
+                    <div class="role-icon">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h3>Student View</h3>
+                    <p>Check timetables, attendance records, and receive important notifications</p>
+                    <div class="role-actions">
+                        <a href="#" class="role-link" onclick="showDemoModal('student')">View Demo</a>
+                        <a href="#" class="role-link qr-link" onclick="showQRAttendanceModal()"><i class="fas fa-qrcode"></i> Scan Attendance</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Modal -->
+        <div class="modal" id="login-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Login to Your Account</h2>
+                    <span class="close-modal" onclick="closeModal('login-modal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="login-username">Username</label>
+                            <input type="text" id="login-username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" required>
+                        </div>
+                        <div id="login-status" class="status-message"></div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-block">Login</button>
+                        </div>
+                        <div class="form-footer">
+                            <a href="#">Forgot Password?</a>
+                        </div>
+                        <div class="demo-credentials">
+                            <p><strong>Demo Credentials:</strong></p>
+                            <p>Admin: admin / admin123</p>
+                            <p>Faculty: faculty / faculty123</p>
+                            <p>Student: student / student123</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Modal -->
+        <div class="modal" id="register-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Create Your Account</h2>
+                    <span class="close-modal" onclick="closeModal('register-modal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="register-form">
+                        <div class="form-group">
+                            <label for="register-name">Full Name</label>
+                            <input type="text" id="register-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-email">Email</label>
+                            <input type="email" id="register-email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-password">Password</label>
+                            <input type="password" id="register-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="register-role">Register As</label>
+                            <select id="register-role">
+                                <option value="faculty">Faculty</option>
+                                <option value="student">Student</option>
+                            </select>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-primary btn-block" onclick="handleRegister()">Create Account</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Modal -->
+        <div class="modal" id="demo-modal">
+            <div class="modal-content modal-lg">
+                <div class="modal-header">
+                    <h2 id="demo-title">Dashboard Demo</h2>
+                    <span class="close-modal" onclick="closeModal('demo-modal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="demo-content" id="demo-content">
+                        <!-- Demo content will be loaded here -->
+                    </div>
+                    <div class="demo-footer">
+                        <button class="btn btn-primary" onclick="closeModal('demo-modal')">Close Demo</button>
+                        <button class="btn btn-outline" onclick="showRegisterModal()">Sign Up Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QR Code Attendance Modal -->
+        <div class="modal" id="qr-attendance-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>QR Code Attendance</h2>
+                    <span class="close-modal" onclick="closeModal('qr-attendance-modal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="qr-tabs">
+                        <button class="qr-tab active" onclick="switchQRTab('generate')">Generate QR</button>
+                        <button class="qr-tab" onclick="switchQRTab('scan')">Scan QR</button>
+                    </div>
+                    
+                    <div id="qr-generate-content" class="qr-content active">
+                        <p>Generate a QR code for your class or event:</p>
+                        <div class="form-group">
+                            <label for="qr-class-id">Class/Event ID</label>
+                            <input type="text" id="qr-class-id" placeholder="Enter class or event ID">
+                        </div>
+                        <div class="form-group">
+                            <label for="qr-expiry-time">Valid for (minutes)</label>
+                            <input type="number" id="qr-expiry-time" value="30" min="5" max="120">
+                        </div>
+                        <button class="btn btn-primary btn-block" onclick="generateAttendanceQR()">Generate QR Code</button>
+                        <div id="qr-code-container" class="qr-display">
+                            <!-- QR code will be displayed here -->
+                        </div>
+                    </div>
+                    
+                    <div id="qr-scan-content" class="qr-content">
+                        <p>Scan a QR code to mark your attendance:</p>
+                        <div id="qr-reader" class="qr-reader"></div>
+                        <div id="qr-scan-result" class="status-message"></div>
+                        <button class="btn btn-primary btn-block" onclick="startQRScanner()">Start Scanner</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QR Login Modal -->
+        <div class="modal" id="qr-login-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>QR Code Login</h2>
+                    <span class="close-modal" onclick="closeModal('qr-login-modal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="qr-tabs">
+                        <button class="qr-tab active" onclick="switchLoginQRTab('generate')">Generate Login QR</button>
+                        <button class="qr-tab" onclick="switchLoginQRTab('scan')">Scan Login QR</button>
+                    </div>
+                    
+                    <div id="login-qr-generate-content" class="qr-content active">
+                        <p>Generate a QR code to login on another device:</p>
+                        <button class="btn btn-primary btn-block" onclick="generateLoginQR()">Generate Login QR</button>
+                        <div id="login-qr-code-container" class="qr-display">
+                            <!-- Login QR code will be displayed here -->
+                        </div>
+                    </div>
+                    
+                    <div id="login-qr-scan-content" class="qr-content">
+                        <p>Scan a QR code to login:</p>
+                        <div id="login-qr-reader" class="qr-reader"></div>
+                        <div id="login-qr-scan-result" class="status-message"></div>
+                        <button class="btn btn-primary btn-block" onclick="startLoginQRScanner()">Start Scanner</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Smart Timetable Generation Modal -->
+        <div class="modal" id="timetable-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Smart Timetable Generation</h2>
+                    <span class="close-modal" onclick="closeModal('timetable-modal')">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <form id="timetable-form" onsubmit="generateSmartTimetable(event)">
+                        <div class="form-group">
+                            <label for="timetable-name">Timetable Name</label>
+                            <input type="text" id="timetable-name" placeholder="e.g., Computer Science Semester 1" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="department">Department</label>
+                            <input type="text" id="department" placeholder="e.g., Computer Science" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="semester">Semester</label>
+                            <select id="semester" required>
+                                <option value="">Select Semester</option>
+                                <option value="1">Semester 1</option>
+                                <option value="2">Semester 2</option>
+                                <option value="3">Semester 3</option>
+                                <option value="4">Semester 4</option>
+                                <option value="5">Semester 5</option>
+                                <option value="6">Semester 6</option>
+                                <option value="7">Semester 7</option>
+                                <option value="8">Semester 8</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="academic-year">Academic Year</label>
+                            <input type="text" id="academic-year" placeholder="e.g., 2024-2025" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="start-date">Start Date</label>
+                            <input type="date" id="start-date" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="end-date">End Date</label>
+                            <input type="date" id="end-date" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subjects">Subjects (one per line)</label>
+                            <textarea id="subjects" rows="4" placeholder="Introduction to Programming&#10;Data Structures&#10;Database Systems&#10;Web Development" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="faculty">Faculty Members (one per line)</label>
+                            <textarea id="faculty" rows="3" placeholder="Dr. Smith&#10;Prof. Johnson&#10;Dr. Williams" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="rooms">Available Rooms (one per line)</label>
+                            <textarea id="rooms" rows="3" placeholder="Room 301&#10;Room 302&#10;Lab 3&#10;Auditorium A" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="constraints">Constraints (optional)</label>
+                            <textarea id="constraints" rows="3" placeholder="No classes on Fridays after 2 PM&#10;Lab sessions only in Lab rooms&#10;Maximum 3 hours per day per faculty"></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-magic"></i> Generate Smart Timetable
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div id="timetable-result" class="timetable-result" style="display: none;">
+                        <h3>Generated Timetable</h3>
+                        <div id="timetable-display"></div>
+                        <button class="btn btn-success btn-block" onclick="saveTimetable()">
+                            <i class="fas fa-save"></i> Save Timetable
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span>ClassSYNC</span><span class="accent"></span>
+                    <p>Revolutionizing academic scheduling and attendance</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-section">
+                        <h4>Product</h4>
+                        <ul>
+                            <li><a href="#">Features</a></li>
+                            <li><a href="#">Pricing</a></li>
+                            <li><a href="#">Testimonials</a></li>
+                            <li><a href="#">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Security</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; HACKATHON 3.0 2025 ClassSYNC. All rights reserved.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-linkedin"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="three-animation.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
+
+
+

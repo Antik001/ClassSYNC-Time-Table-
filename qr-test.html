@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Testing</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode.js@1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .test-card {
+            background: var(--bg-card);
+            border-radius: var(--border-radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .test-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .test-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .test-status {
+            font-size: 0.9rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--border-radius-sm);
+        }
+        
+        .status-pending {
+            background-color: var(--warning-light);
+            color: var(--warning-dark);
+        }
+        
+        .status-success {
+            background-color: var(--success-light);
+            color: var(--success-dark);
+        }
+        
+        .status-error {
+            background-color: var(--error-light);
+            color: var(--error-dark);
+        }
+        
+        .test-content {
+            margin-top: 1rem;
+        }
+        
+        .test-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .test-result {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: var(--border-radius-sm);
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .qr-test-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .qr-display {
+            width: 256px;
+            height: 256px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: white;
+            border-radius: var(--border-radius-md);
+            padding: 1rem;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .qr-reader {
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            border-radius: var(--border-radius-md);
+            overflow: hidden;
+        }
+        
+        @media (max-width: 768px) {
+            .test-actions {
+                flex-direction: column;
+            }
+            
+            .qr-display {
+                width: 200px;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="logo">
+            <h1>QR Code Testing</h1>
+        </div>
+        <div class="nav-icons">
+            <div class="theme-toggle">
+                <i class="fas fa-moon"></i>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-container">
+        <h2>QR Code Functionality Testing</h2>
+        <p>This page allows you to test QR code generation and scanning functionality across different devices.</p>
+        
+        <!-- Test 1: Generate Attendance QR -->
+        <div class="test-card" id="test-generate-attendance">
+            <div class="test-header">
+                <div class="test-title">Test 1: Generate Attendance QR Code</div>
+                <div class="test-status status-pending" id="status-generate-attendance">Pending</div>
+            </div>
+            <div class="test-content">
+                <div class="form-group">
+                    <label for="class-id">Class ID:</label>
+                    <input type="text" id="class-id" value="CS-101" placeholder="Enter class ID">
+                </div>
+                <div class="form-group">
+                    <label for="expiry-time">Expiry Time (minutes):</label>
+                    <input type="number" id="expiry-time" value="5" min="1" max="60">
+                </div>
+                <div class="test-actions">
+                    <button class="btn btn-primary" onclick="testGenerateAttendanceQR()">Generate QR Code</button>
+                </div>
+                <div class="qr-test-container">
+                    <div class="qr-display" id="attendance-qr-display"></div>
+                    <div id="attendance-qr-expiry"></div>
+                </div>
+                <div class="test-result" id="result-generate-attendance"></div>
+            </div>
+        </div>
+        
+        <!-- Test 2: Scan Attendance QR -->
+        <div class="test-card" id="test-scan-attendance">
+            <div class="test-header">
+                <div class="test-title">Test 2: Scan Attendance QR Code</div>
+                <div class="test-status status-pending" id="status-scan-attendance">Pending</div>
+            </div>
+            <div class="test-content">
+                <div class="test-actions">
+                    <button class="btn btn-primary" onclick="startAttendanceQRScanner()">Start Scanner</button>
+                    <button class="btn btn-secondary" onclick="stopQRScanner()">Stop Scanner</button>
+                </div>
+                <div class="qr-test-container">
+                    <div class="qr-reader" id="attendance-qr-reader"></div>
+                </div>
+                <div class="test-result" id="result-scan-attendance"></div>
+            </div>
+        </div>
+        
+        <!-- Test 3: Generate Login QR -->
+        <div class="test-card" id="test-generate-login">
+            <div class="test-header">
+                <div class="test-title">Test 3: Generate Login QR Code</div>
+                <div class="test-status status-pending" id="status-generate-login">Pending</div>
+            </div>
+            <div class="test-content">
+                <div class="test-actions">
+                    <button class="btn btn-primary" onclick="testGenerateLoginQR()">Generate QR Code</button>
+                </div>
+                <div class="qr-test-container">
+                    <div class="qr-display" id="login-qr-display"></div>
+                    <div id="login-qr-expiry"></div>
+                </div>
+                <div class="test-result" id="result-generate-login"></div>
+            </div>
+        </div>
+        
+        <!-- Test 4: Scan Login QR -->
+        <div class="test-card" id="test-scan-login">
+            <div class="test-header">
+                <div class="test-title">Test 4: Scan Login QR Code</div>
+                <div class="test-status status-pending" id="status-scan-login">Pending</div>
+            </div>
+            <div class="test-content">
+                <div class="test-actions">
+                    <button class="btn btn-primary" onclick="startLoginQRScanner()">Start Scanner</button>
+                    <button class="btn btn-secondary" onclick="stopQRScanner()">Stop Scanner</button>
+                </div>
+                <div class="qr-test-container">
+                    <div class="qr-reader" id="login-qr-reader"></div>
+                </div>
+                <div class="test-result" id="result-scan-login"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // API Configuration
+        const API_URL = 'http://localhost:3000/api';
+        
+        // QR Code API Endpoints
+        const QR_ENDPOINTS = {
+            generateAttendance: `${API_URL}/qr/generate-attendance`,
+            verifyAttendance: `${API_URL}/qr/verify-attendance`,
+            generateLogin: `${API_URL}/qr/generate-login`,
+            verifyLogin: `${API_URL}/qr/verify-login`
+        };
+        
+        // Global variables
+        let html5QrScanner = null;
+        let currentScannerType = null;
+        
+        // Theme toggle
+        const themeToggle = document.querySelector('.theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            themeToggle.querySelector('i').classList.toggle('fa-moon');
+            themeToggle.querySelector('i').classList.toggle('fa-sun');
+        });
+        
+        // Test 1: Generate Attendance QR
+        async function testGenerateAttendanceQR() {
+            const classId = document.getElementById('class-id').value;
+            const expiryTime = document.getElementById('expiry-time').value;
+            const resultElement = document.getElementById('result-generate-attendance');
+            const statusElement = document.getElementById('status-generate-attendance');
+            
+            if (!classId) {
+                resultElement.textContent = 'Error: Class ID is required';
+                statusElement.textContent = 'Error';
+                statusElement.className = 'test-status status-error';
+                return;
+            }
+            
+            try {
+                // Get token from localStorage
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    resultElement.textContent = 'Error: You need to login first. Please login as faculty from the main page.';
+                    statusElement.textContent = 'Error';
+                    statusElement.className = 'test-status status-error';
+                    return;
+                }
+                
+                // Call API to generate QR code
+                const response = await fetch(QR_ENDPOINTS.generateAttendance, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ classId, expiryMinutes: expiryTime })
+                });
+                
+                const data = await response.json();
+                resultElement.textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success) {
+                    statusElement.textContent = 'Success';
+                    statusElement.className = 'test-status status-success';
+                    
+                    // Generate QR code
+                    const qrContainer = document.getElementById('attendance-qr-display');
+                    qrContainer.innerHTML = '';
+                    
+                    new QRCode(qrContainer, {
+                        text: data.qrData,
+                        width: 256,
+                        height: 256,
+                        colorDark: '#4F46E5',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                    
+                    // Show expiry countdown
+                    const expiryDate = new Date(data.expiry);
+                    const countdownEl = document.getElementById('attendance-qr-expiry');
+                    
+                    const countdownInterval = setInterval(() => {
+                        const now = new Date().getTime();
+                        const distance = expiryDate.getTime() - now;
+                        
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        
+                        countdownEl.textContent = `Expires in: ${minutes}m ${seconds}s`;
+                        
+                        if (distance < 0) {
+                            clearInterval(countdownInterval);
+                            countdownEl.textContent = 'QR Code Expired';
+                            qrContainer.classList.add('expired');
+                        }
+                    }, 1000);
+                } else {
+                    statusElement.textContent = 'Error';
+                    statusElement.className = 'test-status status-error';
+                }
+            } catch (error) {
+                resultElement.textContent = `Error: ${error.message}`;
+                statusElement.textContent = 'Error';
+                statusElement.className = 'test-status status-error';
+            }
+        }
+        
+        // Test 2: Scan Attendance QR
+        function startAttendanceQRScanner() {
+            const resultElement = document.getElementById('result-scan-attendance');
+            const statusElement = document.getElementById('status-scan-attendance');
+            const qrReader = document.getElementById('attendance-qr-reader');
+            
+            // Stop any existing scanner
+            if (html5QrScanner) {
+                html5QrScanner.stop();
+            }
+            
+            currentScannerType = 'attendance';
+            
+            // Create new scanner
+            html5QrScanner = new Html5Qrcode('attendance-qr-reader');
+            
+            const qrScannerConfig = { fps: 10, qrbox: 250 };
+            
+            html5QrScanner.start(
+                { facingMode: 'environment' },
+                qrScannerConfig,
+                async (qrData) => {
+                    // QR Code scanned successfully
+                    resultElement.textContent = `QR Code detected: ${qrData}`;
+                    
+                    try {
+                        // Get token from localStorage
+                        const token = localStorage.getItem('token');
+                        if (!token) {
+                            resultElement.textContent = 'Error: You need to login first. Please login as student from the main page.';
+                            statusElement.textContent = 'Error';
+                            statusElement.className = 'test-status status-error';
+                            return;
+                        }
+                        
+                        // Call API to verify QR code
+                        const response = await fetch(QR_ENDPOINTS.verifyAttendance, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ qrData })
+                        });
+                        
+                        const data = await response.json();
+                        resultElement.textContent = JSON.stringify(data, null, 2);
+                        
+                        if (data.success) {
+                            statusElement.textContent = 'Success';
+                            statusElement.className = 'test-status status-success';
+                            html5QrScanner.stop();
+                        } else {
+                            statusElement.textContent = 'Error';
+                            statusElement.className = 'test-status status-error';
+                        }
+                    } catch (error) {
+                        resultElement.textContent = `Error: ${error.message}`;
+                        statusElement.textContent = 'Error';
+                        statusElement.className = 'test-status status-error';
+                    }
+                },
+                (errorMessage) => {
+                    // QR Code scanning error (ignore)
+                }
+            ).catch((err) => {
+                resultElement.textContent = `Scanner Error: ${err}`;
+                statusElement.textContent = 'Error';
+                statusElement.className = 'test-status status-error';
+            });
+        }
+        
+        // Test 3: Generate Login QR
+        async function testGenerateLoginQR() {
+            const resultElement = document.getElementById('result-generate-login');
+            const statusElement = document.getElementById('status-generate-login');
+            
+            try {
+                // Get token from localStorage
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    resultElement.textContent = 'Error: You need to login first. Please login from the main page.';
+                    statusElement.textContent = 'Error';
+                    statusElement.className = 'test-status status-error';
+                    return;
+                }
+                
+                // Call API to generate QR code
+                const response = await fetch(QR_ENDPOINTS.generateLogin, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                resultElement.textContent = JSON.stringify(data, null, 2);
+                
+                if (data.success) {
+                    statusElement.textContent = 'Success';
+                    statusElement.className = 'test-status status-success';
+                    
+                    // Generate QR code
+                    const qrContainer = document.getElementById('login-qr-display');
+                    qrContainer.innerHTML = '';
+                    
+                    new QRCode(qrContainer, {
+                        text: data.qrData,
+                        width: 256,
+                        height: 256,
+                        colorDark: '#4F46E5',
+                        colorLight: '#ffffff',
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                    
+                    // Show expiry countdown
+                    const expiryDate = new Date(data.expiry);
+                    const countdownEl = document.getElementById('login-qr-expiry');
+                    
+                    const countdownInterval = setInterval(() => {
+                        const now = new Date().getTime();
+                        const distance = expiryDate.getTime() - now;
+                        
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                        
+                        countdownEl.textContent = `Expires in: ${minutes}m ${seconds}s`;
+                        
+                        if (distance < 0) {
+                            clearInterval(countdownInterval);
+                            countdownEl.textContent = 'QR Code Expired';
+                            qrContainer.classList.add('expired');
+                        }
+                    }, 1000);
+                } else {
+                    statusElement.textContent = 'Error';
+                    statusElement.className = 'test-status status-error';
+                }
+            } catch (error) {
+                resultElement.textContent = `Error: ${error.message}`;
+                statusElement.textContent = 'Error';
+                statusElement.className = 'test-status status-error';
+            }
+        }
+        
+        // Test 4: Scan Login QR
+        function startLoginQRScanner() {
+            const resultElement = document.getElementById('result-scan-login');
+            const statusElement = document.getElementById('status-scan-login');
+            const qrReader = document.getElementById('login-qr-reader');
+            
+            // Stop any existing scanner
+            if (html5QrScanner) {
+                html5QrScanner.stop();
+            }
+            
+            currentScannerType = 'login';
+            
+            // Create new scanner
+            html5QrScanner = new Html5Qrcode('login-qr-reader');
+            
+            const qrScannerConfig = { fps: 10, qrbox: 250 };
+            
+            html5QrScanner.start(
+                { facingMode: 'environment' },
+                qrScannerConfig,
+                async (qrData) => {
+                    // QR Code scanned successfully
+                    resultElement.textContent = `QR Code detected: ${qrData}`;
+                    
+                    try {
+                        // Call API to verify QR code
+                        const response = await fetch(QR_ENDPOINTS.verifyLogin, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ qrData })
+                        });
+                        
+                        const data = await response.json();
+                        resultElement.textContent = JSON.stringify(data, null, 2);
+                        
+                        if (data.success) {
+                            statusElement.textContent = 'Success';
+                            statusElement.className = 'test-status status-success';
+                            html5QrScanner.stop();
+                            
+                            // Store token if login successful
+                            if (data.token) {
+                                localStorage.setItem('token', data.token);
+                                localStorage.setItem('user', JSON.stringify(data.user));
+                                resultElement.textContent += '\n\nLogin successful! Token stored in localStorage.';
+                            }
+                        } else {
+                            statusElement.textContent = 'Error';
+                            statusElement.className = 'test-status status-error';
+                        }
+                    } catch (error) {
+                        resultElement.textContent = `Error: ${error.message}`;
+                        statusElement.textContent = 'Error';
+                        statusElement.className = 'test-status status-error';
+                    }
+                },
+                (errorMessage) => {
+                    // QR Code scanning error (ignore)
+                }
+            ).catch((err) => {
+                resultElement.textContent = `Scanner Error: ${err}`;
+                statusElement.textContent = 'Error';
+                statusElement.className = 'test-status status-error';
+            });
+        }
+        
+        // Stop QR scanner
+        function stopQRScanner() {
+            if (html5QrScanner) {
+                html5QrScanner.stop();
+                html5QrScanner = null;
+                
+                if (currentScannerType === 'attendance') {
+                    document.getElementById('result-scan-attendance').textContent = 'Scanner stopped';
+                } else if (currentScannerType === 'login') {
+                    document.getElementById('result-scan-login').textContent = 'Scanner stopped';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
